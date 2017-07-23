@@ -1,11 +1,14 @@
-#include <iostream>
-#include <vector>
-#include <random>
-#include <algorithm>
-#include <chrono>
-#include <iterator>
+#ifndef SAXPY_COMMON_H
+#define SAXPY_COMMON_H
 
-#include <grppi/grppi.h>
+#include <string>
+#include <iostream>
+#include <random>
+#include <vector>
+#include <tuple>
+#include <chrono>
+#include <algorithm>
+#include <iterator>
 
 void print_error(const std::string & prog, const std::string & msg) {
   using namespace std;
@@ -14,6 +17,13 @@ void print_error(const std::string & prog, const std::string & msg) {
   cerr << prog << "  size factor" << endl;
   cerr << "\tsize: Numer of elements in vector" << endl;
   cerr << "\tfactor: Multiplication factor" << endl;
+}
+
+std::tuple<int,double> get_arguments(char ** argv) {
+  using namespace std;
+  int size = stoi(argv[1]);
+  double factor = stod(argv[2]);
+  return make_tuple(size,factor);
 }
 
 auto generate_vector(int sz) {
@@ -25,15 +35,6 @@ auto generate_vector(int sz) {
       [&]() { return dist(gen); }
   );
   return result;
-}
-
-void saxpy(double a, const std::vector<double> & x, std::vector<double> & y)
-{
-  grppi::parallel_execution_native ex;
-  grppi::map(ex, begin(x), end(x), begin(y), 
-      [a](double valx, double valy) { return a * valx + valy; },
-      begin(y)
-  );
 }
 
 void print_sample(const std::vector<double> & x, 
@@ -48,8 +49,8 @@ void print_sample(const std::vector<double> & x,
   cout << "...\n";
 }
 
-int main(int argc, char ** argv) 
-{
+template <typename F>
+int run_saxpy(F saxpy_fun, int argc, char ** argv) {
   using namespace std;
 
   cout << "SAXPY" << endl;
@@ -58,21 +59,22 @@ int main(int argc, char ** argv)
     print_error(argv[0], "Wrong number of arguments");
     return -1;
   }
-  int size = stoi(argv[1]);
+
+  int size;
+  double factor;
+  tie(size,factor) = get_arguments(argv);
   cout << "  size = " << size << endl;
-  double factor = stod(argv[2]);
   cout << "  factor = " << factor << endl;
 
-  vector<double> x = generate_vector(size);
-  cout << "Generated x[] of size " << x.size() << endl;
-  vector<double> y = generate_vector(size);
-  cout << "Generated x[] of size " << x.size() << endl;
+  auto x = generate_vector(size);
+  auto y = generate_vector(size);
+
   print_sample(x,y);
 
   using namespace chrono;
   auto t1 = system_clock::now();
 
-  saxpy(factor, x, y);  
+  saxpy_fun(factor, x, y);  
 
   auto t2 = system_clock::now();
 
@@ -81,8 +83,7 @@ int main(int argc, char ** argv)
   auto ellapsed = duration_cast<microseconds>(t2-t1);
   cout << "Ellapsed time: " << ellapsed.count() << " microseconds" << endl;
 
-  cout << endl;
-  cout << "Note STL algorithms cannot be parallelized with OpenMP" << endl;
-
   return 0;
 }
+
+#endif
