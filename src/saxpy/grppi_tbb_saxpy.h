@@ -2,7 +2,7 @@
 #define GRPPI_TBB_SAXPY_H
 
 #include <vector>
-#include <cstddef> // Temp workaround
+
 #include <grppi/grppi.h>
 
 void grppi_tbb_saxpy(double a, const std::vector<double> & x, std::vector<double> & y)
@@ -13,7 +13,5 @@ void grppi_tbb_saxpy(double a, const std::vector<double> & x, std::vector<double
       begin(y)
   );
 }
-
-
 
 #endif
