@@ -31,6 +31,7 @@ auto generate_vector(int sz) {
   random_device gen;
   uniform_real_distribution<double> dist{-100.0, 100.0};
   vector<double> result;
+  result.reserve(sz);
   generate_n(back_inserter(result), sz, 
       [&]() { return dist(gen); }
   );
@@ -69,7 +70,10 @@ int run_saxpy(F saxpy_fun, int argc, char ** argv) {
   auto x = generate_vector(size);
   auto y = generate_vector(size);
 
-  print_sample(x,y);
+  cout << "x[0]=" << x[0] << endl;
+  cout << "y[0]=" << y[0] << endl;
+  cout << "x[" << x.size()-1 << "]=" << x[x.size()-1] << endl;
+  cout << "y[" << y.size()-1 << "]=" << y[y.size()-1] << endl;
 
   using namespace chrono;
   auto t1 = system_clock::now();
@@ -78,7 +82,10 @@ int run_saxpy(F saxpy_fun, int argc, char ** argv) {
 
   auto t2 = system_clock::now();
 
-  print_sample(x,y);
+  cout << "x[0]=" << x[0] << endl;
+  cout << "y[0]=" << y[0] << endl;
+  cout << "x[" << x.size()-1 << "]=" << x[x.size()-1] << endl;
+  cout << "y[" << y.size()-1 << "]=" << y[y.size()-1] << endl;
 
   auto ellapsed = duration_cast<microseconds>(t2-t1);
   cout << "Ellapsed time: " << ellapsed.count() << " microseconds" << endl;
