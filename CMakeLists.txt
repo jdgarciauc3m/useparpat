@@ -21,8 +21,8 @@ message(FATAL_ERROR "Unsupported compiler")
 endif()
 
 Find_Package(OpenMP REQUIRED)
-Find_Package(TBB)
-Find_Package(Boost REQUIRED COMPONENTS thread)
+Find_Package(TBB REQUIRED)
+Find_Package(Threads REQUIRED)
 
 #Process subdirectories
 add_subdirectory(src)

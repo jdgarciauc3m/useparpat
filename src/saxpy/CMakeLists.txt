@@ -8,10 +8,9 @@ add_executable(tbb_saxpy tbb_saxpy.cpp)
 target_link_libraries(tbb_saxpy ${TBB_LIBRARIES})
 
 add_executable(grppi_seq_saxpy grppi_seq_saxpy.cpp)
-target_link_libraries(grppi_seq_saxpy ${Boost_LIBRARIES})
 
 add_executable(grppi_nat_saxpy grppi_nat_saxpy.cpp)
-target_link_libraries(grppi_nat_saxpy ${Boost_LIBRARIES})
+target_link_libraries(grppi_nat_saxpy ${Boost_LIBRARIES} Threads::Threads)
 
 add_executable(grppi_tbb_saxpy grppi_tbb_saxpy.cpp)
 target_link_libraries(grppi_tbb_saxpy ${Boost_LIBRARIES} ${TBB_LIBRARIES})
